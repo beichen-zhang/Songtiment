@@ -1,0 +1,97 @@
+import csv
+import nltk
+from nltk.sentiment.vader import SentimentIntensityAnalyzer
+from nltk.corpus import sentiwordnet as swn
+
+
+name_list=["Adele.txt","Ariana Grande.txt","Beyonce.txt","Bruno Mars.txt","Coldplay.txt","Drake.txt","Ed Sheeran.txt","Eminem.txt","Jay-Z.txt","Justin Bieber.txt","Justin Timberlake.txt","Katy Perry.txt","Lady Gaga.txt","Maroon 5.txt","Metallica.txt","Rihanna.txt","Selena Gomez.txt","Shawn Mendes.txt","Taylor Swift.txt","The Chainsmokers.txt"]
+sum_list=[]
+for fil in name_list:
+	F=open(fil,"r")
+	sum=0
+	length_=0
+	count=0
+#c = csv.writer(open("MYFILE.csv", "wb"))
+#c.writerow(["Singer ID","singer name","singer score","song name","lyrics","song score"])
+	for line in F:
+		song_length=0
+        	count+=1
+        	sent=line.split(".")
+        	name="."
+        	result=0
+		sentence=[]
+        	for sentence_ in sent:
+			song_length+=1
+        	        if name==".":
+                	        name=sentence_
+                	else:
+				sentence.append(sentence_)
+                sid= SentimentIntensityAnalyzer()
+		for sen in sentence:
+			ss=sid.polarity_scores(sen)
+			for k in sorted(ss):
+				if k=="compound":
+					result+=ss[k]
+				#	result+= ss[k]        	
+        	#print("song name: {}".format(name))
+        	#print("score: {}".format(nomalized))
+		result=float(result)/float(song_length)
+		result*=100
+		print(result)
+        	sum+=result
+        #print("sum: {}".format(sum))
+        #print(count)
+        	#lyrics=line[len(name)+1:len(name)+100]
+        	#c.writerow(["1","Adele",sum,name,lyrics,nomalized])
+        	result=0
+        	name="."
+	sum=float(sum)/float(count)
+	sum_list.append(sum)
+	print(fil)
+  	print(sum)
+print(sum_list)
+F.close()
+
+
+
+count=1
+c = csv.writer(open("final output_.csv", "wb"))
+c.writerow(["Singer ID","Singer name","Singer score","Song name","lyrics","Song score"])
+#print(len(sum_list))
+for fil in name_list:
+	F=open(fil,"r")
+	sum=0
+	length_=0
+#c.writerow(["Singer ID","singer name","singer score","song name","lyrics","song score"])
+	for line in F:
+		sent=line.split(".")
+		name="."
+		result=0
+		song_length=0
+		sentence=[]
+        	for sentence_ in sent:
+        		if name==".":
+                		name=sentence_
+            		else:
+				song_length+=1
+                		sentence.append(sentence_)
+        	sid= SentimentIntensityAnalyzer()
+        	for sen in sentence:
+            		ss=sid.polarity_scores(sen)
+                	for k in sorted(ss):
+                    		if k=="compound":
+                        		result+=ss[k]
+
+
+	#sum+=result
+	#print("sum: {}".format(sum))
+	#print(count)
+		result=float(result)/float(song_length)
+		result*=100
+		lyrics=line[len(name)+1:len(name)+101]
+		c.writerow([count,fil[:-4],sum_list[count-1],name,"{}...".format(lyrics),result])
+		result=0
+		name='.'
+	print(fil[:-4])
+	count+=1
+F.close()
